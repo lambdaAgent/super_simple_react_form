@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import { recursivelyGetValue } from '../../soya_next_shared/utilities/utilities.js';
 export const isLastChild = component => {
   return !component.hasOwnProperty('props') || !component.props.hasOwnProperty('children');
 };
@@ -22,30 +22,25 @@ export const getValidator = component => {
   return (otherValidators);
 };
 
-// handle original HTML
-// export const getHTMLValue = component => {};
-// export const getHTMLValidators = component => {};
-
-
 export function renderElemWithErrorMessages(upperElementWithValidatation, upperElement, ErrorElement) {
   const errorMessages = upperElementWithValidatation.props['data-errorMessages'];
   const oldChildren = Array.isArray(upperElement.props.children) ? upperElement.props.children : [upperElement.props.children];
   const newProps = {
     children: oldChildren.concat([ <ErrorElement key={'error' + (new Date().getTime())} errorMessages={errorMessages}/> ])
-  };
+};
   return React.cloneElement(upperElementWithValidatation, Object.assign({}, upperElementWithValidatation.props, upperElement.props, newProps ));
 }
 
 export function beginValidate(upperComponent){
   // searchForInput :: Object a -> Object a | null
   // return the uppermost element
-   const { value: inputValue, validators, pathToValue } = recursiveSearchForInput(upperComponent);
+  const { value: inputValue, validators, pathToValue, inputRef } = recursiveSearchForInput(upperComponent);
   if(inputValue === null || inputValue === undefined){
     return { upperComponent, valid: true };
   }
   const errorMessages = validators ? validators.map(validator => validator(inputValue)) : [];
   let newChildren = Array.isArray(upperComponent.props.children) ? upperComponent.props.children : [upperComponent.props.children];
-  const newProps = getPropsOfNewChildren({upperComponent, children: newChildren, errorMessages, pathToValue, inputValue, validators});
+  const newProps = setPropsOfNewChildren({upperComponent, children: newChildren, errorMessages, pathToValue, inputValue, validators});
 
   return {
     child: React.cloneElement(upperComponent, newProps ),
@@ -53,11 +48,18 @@ export function beginValidate(upperComponent){
   };
 }
 
-export function getPropsOfNewChildren({upperComponent, children, errorMessages, pathToValue, inputValue, validators}){
+export function initChildren(children){
+  return children.map((child, index) => {
+      const newProps = setPropsOfNewChildren({upperComponent: child, children: child.props.children});
+  return React.cloneElement(child, Object.assign({}, child.props, newProps));
+});
+}
+
+export function setPropsOfNewChildren({upperComponent, children, errorMessages, pathToValue, inputValue, validators, inputRef}){
   let upsertProps = {};
   let newProps = upperComponent.props;
   let newChildren = children;
-  if(errorMessages.length > 0){
+  if(errorMessages && errorMessages.length > 0){
     // if react element or div
     if(upperComponent.props.hasOwnProperty('name')) { upsertProps.name = upperComponent.props.name; }
     // newChildren = newChildren.concat([<ErrorMessages key={'error' + (new Date().getTime())} errorMessages={errorMessages}/>]);
@@ -66,11 +68,22 @@ export function getPropsOfNewChildren({upperComponent, children, errorMessages, 
     upsertProps['data-value'] = inputValue;
     upsertProps['data-toInputElement'] = pathToValue;
     upsertProps['data-errorMessages'] = errorMessages;
-    upsertProps.onFocus = () => console.log('hello Focus');
-    upsertProps.onBlur = () => console.log('hello Blur');
-    newProps = Object.assign({}, upperComponent.props, upsertProps);
   }
+
+  upsertProps.onBlur = () => ValidateOnBlur(upperComponent, pathToValue, validators);
+
+  newProps = Object.assign({}, upperComponent.props, upsertProps);
+
   return newProps;
+}
+
+function ValidateOnBlur(upperComponent, pathToValue, validators){
+  const { value } = recursivelyGetValue(upperComponent, pathToValue.replace('root.', ''));
+  console.log(value);
+  console.log(upperComponent);
+  // const errorMessages = validators ? validators.map(validator => validator(inputValue)) : [];
+  // componentElement.setAttribute('data-errorMessages', errorMessages);
+  // how to update element?? it's immutable;
 }
 
 export function recursiveSearchForInput(arrayChildren, pathToValue, index){
@@ -81,7 +94,7 @@ export function recursiveSearchForInput(arrayChildren, pathToValue, index){
 
   function searchOneElement(child, searchPathToValue, searchIndex) {
     if(searchIndex) {
-        searchPathToValue += `.${searchIndex}`;
+      searchPathToValue += `.${searchIndex}`;
     }
 
     if (hasPropsValue(child)) {
@@ -104,15 +117,15 @@ export function recursiveSearchForInput(arrayChildren, pathToValue, index){
   }
 
 
-    let children = !Array.isArray(arrayChildren) ? [arrayChildren] : arrayChildren;
-    return children.map((ch, loopIndex) => {
+  let children = !Array.isArray(arrayChildren) ? [arrayChildren] : arrayChildren;
+  return children.map((ch, loopIndex) => {
       if(children.length === 1){
-        loopIndex = null;
-      }
-      return searchOneElement(ch, newPathToValue, loopIndex);
-    }).reduce((prev, next) => {
-       const { value: prevInput } = prev;
-    //    const { value: nextInput } = next;
-       return (prevInput !== null) ? prev : next;
-    }, {value: null, validators: null});
+    loopIndex = null;
+  }
+  return searchOneElement(ch, newPathToValue, loopIndex);
+}).reduce((prev, next) => {
+    const { value: prevInput } = prev;
+  //    const { value: nextInput } = next;
+  return (prevInput !== null) ? prev : next;
+}, {value: null, validators: null});
 }

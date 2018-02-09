@@ -1,26 +1,29 @@
 # A Dead Simple Form For React
 
-### Background:
+### Motivation:
 I feel the direction of form libraries in the market is like trying to bundle everything at once.
-The common direction of these libraries is to create isolated state inside the form, and provide API and component for developer to manipulate the isolated state.
+The common direction of these libraries is to create isolated state inside the form, and provide API for developer to manipulate the isolated state.
 
 Problems: 
-1. Cases after cases, I have problem to integrate individual React's components with this form.
-2. Need to learn API depends on the flavour of the library/
+1. A need to create custom component to work with the Form library.
+2. Problem to integrate another React's components on npm with the form's component.
+3. Components that has been created / modified is locked to certain Form library.
+4. Need to continuously learn API depends on the flavour of the library.
 
 ### Then comes the idea:
-    Why can't there be a form that just do one thing, to validate and that it will work with any kind of component?
+1. Why can't there be a form that just do validation and that it will work with any kind of component?
+2. Leave the rest of data manipulation to developer. This way we can easily cover infinite cases.
 
-### Simple Concept
-1. provide value and validator functions to the input element.
-2. SimpleForm will search it's children and when it find validators, it will validate against it's value
+### Concept:
+1. ***Simple Rules are better than many APIs***
+2. User just need to provide 2 props: ```value```, ```data-validators```
+3. SimpleForm will check for these 2 props, and validate if these 2 props existed.
 
-
-### Simple Rules are better than many APIs
+### Example:
     import { SimpleForm, validations } from 'super-simple-react-form';
     const { required, minValue } = validations;
     
-    class Form extends React.Component {
+    export default class Component extends React.Component {
         constructor(props){
           super(props);
           this.state = {
@@ -71,3 +74,16 @@ Problems:
 **3**) Provide the validator functions to props data-validators
 
 **4**) Please provide custom errorElement if you wish.
+
+### Validations
+List of supported Validations:
+1. minLength(String) 
+2. maxLength(String) 
+3. minValue(Number)
+4. maxValue(Number)
+5. oneOfValue(array) 
+6. preventScriptTag(String)
+
+### Future Features:
+1. validate onBlur
+2. mark the invalid input, as invalid attributes, like the usual HTML ```<input invalid/>```

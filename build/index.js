@@ -1063,12 +1063,13 @@ var SuperSimpleReactForm = function (_React$Component) {
       });
 
       this.childrenWithValidation = children;
-      this.forceUpdate();
 
       var isValid = isValids.every(function (valid) {
         return valid === true;
       });
+      console.log('submit', this.props);
       this.props.onSubmit && this.props.onSubmit(e, { isValid: isValid });
+      this.forceUpdate();
     }
   }]);
 

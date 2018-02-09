@@ -60,5 +60,5 @@ class SuperSimpleReactForm extends React.Component {
 }
 
 export { validations }; 
-export { SuperSimpleReactForm };
+export const SimpleForm = SuperSimpleReactForm ;
 export default SuperSimpleReactForm;

@@ -2,14 +2,15 @@
 
 ### Motivation:
 I feel the direction of form libraries in the market is like trying to bundle everything at once.
-The common direction of these libraries is to create isolated state inside the form, and provide API for developer to manipulate the isolated state.
+The common direction of these libraries is to create isolated state inside the form.
+Because this state is isolated, APIs have to be created for developer to manipulate it, and it's usually an API for specific cases.
 
 Problems: 
-1. A need to create custom component to work with the Form library.
-2. Problem to integrate another React's components on npm with the form's component.
-3. Components that has been created / modified is locked to certain Form library.
-4. Need to continuously learn API depends on the flavour of the library.
-5. It usually takes some effort to bend the library to cover certain cases.
+1. It usually takes some effort to bend the library to cover certain unique cases.
+2. A need to create custom component to work with the Form library.
+3. Problem to integrate another React's components on npm with the form's component.
+4. Components that has been created / modified is locked to certain Form library.
+5. Need to continuously learn API depends on the flavour of the library.
 
 ### Then comes the idea:
 1. Why can't there be a form that just do validation and that it will work with any kind of component?

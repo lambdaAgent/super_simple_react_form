@@ -9,6 +9,7 @@ Problems:
 2. Problem to integrate another React's components on npm with the form's component.
 3. Components that has been created / modified is locked to certain Form library.
 4. Need to continuously learn API depends on the flavour of the library.
+5. It usually takes some effort to bend the library to cover certain cases.
 
 ### Then comes the idea:
 1. Why can't there be a form that just do validation and that it will work with any kind of component?
@@ -85,5 +86,6 @@ List of supported Validations:
 6. preventScriptTag(String)
 
 ### Future Features:
-1. validate onBlur
+1. validate onBlur.
 2. mark the invalid input, as invalid attributes, like the usual HTML ```<input invalid/>```
+3. more validation functions.

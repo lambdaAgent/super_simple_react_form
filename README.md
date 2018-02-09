@@ -74,16 +74,16 @@ Problems:
 
 **3**) Provide the validator functions to props data-validators
 
-**4**) Please provide custom errorElement if you wish.
+**4**) Provide custom errorElement if you wish, make sure it has props errorMessages.
 
-### Validations
-List of supported Validations:
-1. minLength(String) 
-2. maxLength(String) 
-3. minValue(Number)
-4. maxValue(Number)
-5. oneOfValue(array) 
-6. preventScriptTag(String)
+### List of validation functions:
+1. required
+2. minLength(String) 
+3. maxLength(String) 
+4. minValue(Number)
+5. maxValue(Number)
+6. oneOfValue(Array) 
+7. preventScriptTag
 
 ### Future Features:
 1. validate onBlur.

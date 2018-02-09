@@ -54,7 +54,7 @@ class SuperSimpleReactForm extends React.Component {
 
     const isValid = isValids.every(valid => valid === true);
     if(isValid){
-      this.props.onSubmit && this.props.onSubmit({isValid});
+      this.props.onSubmit && this.props.onSubmit(e, {isValid});
     }
   }
 }

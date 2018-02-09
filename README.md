@@ -57,7 +57,7 @@ Why can't there be a form that just do one thing, to validate and that it will w
             <input {...props}/>
         </div>
     }
-###Rules:
+### Rules:
 **1**) Wrap the input element with div, SimpleForm will inject errorElement and render the errorMessages here.
 
 **2**) Provide the value props.

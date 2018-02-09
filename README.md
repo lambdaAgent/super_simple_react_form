@@ -1,13 +1,15 @@
 # A Dead Simple Form For React
 
-background:
+### Background:
 I feel the direction of form libraries in the market is like trying to bundle everything at once.
 The common direction of these libraries is to create isolated state inside the form, and provide API and component for developer to manipulate the isolated state.
 
-Cases after cases, I have problem to integrate individual React's components with this form. 
+Problems: 
+1. Cases after cases, I have problem to integrate individual React's components with this form.
+2. Need to learn API depends on the flavour of the library/
 
 ### Then comes the idea:
-Why can't there be a form that just do one thing, to validate and that it will work with any kind of component?
+    Why can't there be a form that just do one thing, to validate and that it will work with any kind of component?
 
 ### Simple Concept
 1. provide value and validator functions to the input element.
@@ -27,7 +29,7 @@ Why can't there be a form that just do one thing, to validate and that it will w
         }
         render(){
             return (
-                <SimpleForm onSubmit={}>
+                <SimpleForm onSubmit={this.handleSubmit.bind(this)}>
                     <div>                                               {/* 1 */}
                         <input
                            value={this.state.input1}                    {/* 2 */} 
@@ -49,6 +51,10 @@ Why can't there be a form that just do one thing, to validate and that it will w
                     </div>
                 </SimpleForm>
             );
+        }
+        handleSubmit(e, {isValids}){
+            e.preventDefault();
+            console.log(isValids);
         }
     };
     

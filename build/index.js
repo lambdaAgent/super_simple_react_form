@@ -1068,9 +1068,7 @@ var SuperSimpleReactForm = function (_React$Component) {
       var isValid = isValids.every(function (valid) {
         return valid === true;
       });
-      if (isValid) {
-        this.props.onSubmit && this.props.onSubmit(e, { isValid: isValid });
-      }
+      this.props.onSubmit && this.props.onSubmit(e, { isValid: isValid });
     }
   }]);
 

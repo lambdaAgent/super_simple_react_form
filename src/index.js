@@ -1,61 +1,84 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { renderElemWithErrorMessages, beginValidate, initChildren } from './helper.js';
+import { validateAndAddPropsErrorMessages, initChildren, renderChildrenWithErrorMessages} from './recurse.js';
+import {reconcileTwoElements} from './reconcile.js';
 import { validations } from '../../soya_next_shared/utilities/validations.js';
 import ErrorMessages from '../../src/components/zetta/common/ErrorMessages/ErrorMessages.js';
 
 class SuperSimpleReactForm extends React.Component {
+  propTypes = {
+
+  };
+
   constructor(props){
     super(props);
-    this.childrenWithValidation;
+    this.initializeChildren;
+    this.objectRefs = {};
     this.renderChildren = this.renderChildren.bind(this);
   }
 
   componentWillMount(){
-    this.childrenWithValidation = initChildren(this.props.children);
-  }
-
-  renderChildren(){
-    let Children = this.props.children;
-    // assign all data attributes to upperComponent
-    Children = Children.map((child, index) => {
-        // how to reconcile 2 props
-        let newChild;
-    if(this.childrenWithValidation){
-      const childWithValidation = this.childrenWithValidation[index];
-      if(childWithValidation.hasOwnProperty('props') && childWithValidation.props.hasOwnProperty('data-errorMessages')) {
-        // render validation;
-        const ErrorElement = this.props.errorElement || ErrorMessages;
-        newChild = renderElemWithErrorMessages(childWithValidation, child, ErrorElement);
-      }
+    if(!this.props.children) {
+      this.initializeChildren = this.props.children;
+      return;
     }
-
-    return newChild || child;
-  });
-
-    return Children;
+    const initializeChildren = this.initializeChildren = initChildren(this, this.objectRefs, this.props.errorElement || ErrorMessages);
   }
+  componentDidMount(){
+
+  }
+
+renderChildren(){
+  // console.log(this.childrenWithValidation);
+  // return this.childrenWithValidation;
+
+  // let Children = Array.isArray(this.props.children) ? this.props.children : [this.props.children];
+  // Children = Children.map((childWithValue, index) => {
+  //   let newChild;
+  //   if(this.childrenWithValidation){
+  //     const childWithValidation = this.childrenWithValidation[index];
+  //     // render validation;
+  //     const ErrorElement = this.props.errorElement || ErrorMessages;
+  //     newChild = reconcileTwoElements(childWithValidation, childWithValue, ErrorElement);
+  //   }
+  //   return newChild || child;
+  //   // return child;
+  // });
+  // if(this.childrenWithValidation){
+  //   setTimeout(() => {this.childrenWithValidation = null }, 10);
+  //
+  //   const renderedChildren = renderChildrenWithErrorMessages(this.childrenWithValidation, this, this.props.errorElement || ErrorMessages);
+  //   return renderedChildren;
+  // }
+  //
+  // const initializeChildren = this.initializeChildren = initChildren(this, this.objectRefs, this.props.errorElement || ErrorMessages);
+  // const renderedChildren = renderChildrenWithErrorMessages(initializeChildren, this, this.props.errorElement || ErrorMessages);
+  // return renderedChildren;
+  // this.initializeChildren = initChildren(this, this.objectRefs, this.props.errorElement || ErrorMessages);
+  // const validatingChildren = validateAndAddPropsErrorMessages(this.props.children, this);
+  // return reconcileTwoElements(validatingChildren, this.props.children);
+  // return renderChildrenWithErrorMessages(validatingChildren, this, this.props.errorElement || ErrorMessages);
+  // return initChildren(this, this.objectRefs, this.props.errorElement || ErrorMessages);;
+  // return this.childrenWithValidation;
+  // return this.initializeChildren;
+  return this.props.children;
+}
 
   render(){
     return <form {...this.props} onSubmit={this.handleSubmit.bind(this)} >
-    {this.renderChildren()}
-  </form>
+      {this.renderChildren()}
+    </form>
   }
 
-  handleSubmit(e){
+  handleSubmit(e,event){
     e.preventDefault();
     e.stopPropagation();
 
-    let valids = new Array(this.props.children.length);
-    let children = this.props.children.map((child, index) => {
-        const {valid, child: newChild} = beginValidate(child);
-    valids[index] = valid
-    return newChild || child;
-  });
+    const {validities , children: validatedChildren } = validateAndAddPropsErrorMessages(this.initializeChildren, this);
+    this.initializeChildren = validatedChildren;
 
-    this.childrenWithValidation = children;
 
-    this.props.onSubmit && this.props.onSubmit(e, {valids});
+    this.props.onSubmit && this.props.onSubmit(e,event, validities);
     this.forceUpdate();
   }
 }
